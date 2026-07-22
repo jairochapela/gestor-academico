@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from django.urls import path, include
 from rest_framework import routers
+
 from practicas.views import CursoViewSet, EmpresaViewSet, HorarioViewSet, AlumnoViewSet
 
 router = routers.DefaultRouter()

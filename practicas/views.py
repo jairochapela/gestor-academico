@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 from .models import Curso, Empresa, Horario, Alumno
 from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, AlumnoSerializer
 
@@ -7,6 +10,7 @@ from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, 
 
 
 class CursoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
 
