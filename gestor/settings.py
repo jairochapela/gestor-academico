@@ -135,3 +135,21 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "actividad.log",
+        },
+    },
+    'loggers': {
+        'principal': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
