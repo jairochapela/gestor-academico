@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'auditlog',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -167,3 +168,18 @@ SIMPLE_JWT = {
 
 
 AUDITLOG_CID_HEADER="X-Client-ID"
+
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Gestor Académico API',
+    'DESCRIPTION': 'API para la gestión académica',
+    'VERSION': '1.0.0',
+    #'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
