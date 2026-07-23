@@ -1,5 +1,8 @@
 from django.db import models
 
+from auditlog.registry import auditlog
+
+
 # Create your models here.
 class Curso(models.Model):
     nombre = models.CharField(max_length=100)
@@ -10,6 +13,8 @@ class Curso(models.Model):
     def __str__(self):
         return self.nombre
 
+
+auditlog.register(Curso)  # Register the Curso model with auditlog
 
 class Empresa(models.Model):
     nombre = models.CharField(max_length=100)
@@ -24,11 +29,16 @@ class Empresa(models.Model):
     def __str__(self):
         return self.nombre
 
+auditlog.register(Empresa)  # Register the Empresa model with auditlog
+
 
 class Horario(models.Model):
     descripcion = models.TextField()
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     
+
+auditlog.register(Horario)  # Register the Horario model with auditlog
+
 
 class Alumno(models.Model):
     nombre = models.CharField(max_length=100, null=False, blank=False)
@@ -44,3 +54,6 @@ class Alumno(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellidos}"
+
+
+auditlog.register(Alumno)  # Register the Alumno model with auditlog
