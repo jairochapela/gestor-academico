@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Cursos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Cursos Registrados</h1>
+        <a href="/admin/practicas/curso/add/" class="btn btn-primary">+ Nuevo Curso</a>
+    </div>
+
+    <!-- Formulario de Búsqueda -->
+    <form method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Buscar curso por nombre..." value="{{ request.GET.q|default:'' }}">
+            <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            {% if request.GET.q %}
+                <a href="{% url 'curso_list' %}" class="btn btn-outline-danger">Limpiar</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Tabla de Cursos -->
+    {% if cursos or object_list %}
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for curso in object_list|default:cursos %}
+                            <tr>
+                                <td><strong>{{ curso.nombre }}</strong></td>
+                                <td>{{ curso.descripcion|default:"Sin descripción"|truncatewords:12 }}</td>
+                                <td>{{ curso.fecha_inicio|date:"d/m/Y" }}</td>
+                                <td>{{ curso.fecha_fin|date:"d/m/Y" }}</td>
+                                <td class="text-end">
+                                    <a href="/api/v1/cursos/{{ curso.id }}/" class="btn btn-sm btn-outline-info" target="_blank">Ver API</a>
+                                    <a href="/admin/practicas/curso/{{ curso.id }}/change/" class="btn btn-sm btn-outline-warning">Editar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control de Paginación -->
+        {% if is_paginated %}
+        <nav aria-label="Navegación de páginas" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No hay cursos registrados en la base de datos.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
