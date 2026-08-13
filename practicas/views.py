@@ -32,7 +32,7 @@ class AuditlogActorMixin:
         user = getattr(self.request, 'user', None)
         if user is not None and user.is_authenticated:
             return set_actor(user)
-            return set_actor(None)
+        return set_actor(None)
 
     def create(self, request, *args, **kwargs):
         with self._actor_context():
@@ -87,7 +87,7 @@ class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
    
 class AlumnoListView(ListView):
     model = Alumno
-    template_name = "alumnos/listado.html"   # Ajusta al nombre de tu plantilla
+    template_name = "practicas/listado_alumnos.html"
     context_object_name = "alumnos"
 
     def get_queryset(self):
@@ -98,6 +98,17 @@ class AlumnoListView(ListView):
             queryset = queryset.filter(curso_id=curso_id)
 
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cursos'] = Curso.objects.all()
+        
+        # Pasar el ID del curso seleccionado
+        curso_id = self.request.GET.get("curso")
+        if curso_id:
+            context['selected_curso'] = int(curso_id)
+        
+        return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
