@@ -10,6 +10,14 @@ from auditlog.context import set_actor
 from .models import Curso, Empresa, Horario, Alumno
 from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, AlumnoSerializer
 
+<<<<<<< HEAD
+=======
+from auditlog.context import set_actor
+
+from django.shortcuts import render
+
+
+>>>>>>> 7a14db6154e221ee24ac06aa796621a90e98c313
 logger = logging.getLogger('principal')
 
 class AuditlogActorMixin:
@@ -70,6 +78,7 @@ class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
 
+<<<<<<< HEAD
 # --- VISTA HTML ---
 
 class CursoListView(LoginRequiredMixin, ListView):
@@ -86,3 +95,8 @@ class CursoListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(nombre__icontains=query)
         return queryset
     
+=======
+
+def frontpage(request):
+    return render(request, 'practica/frontpage.html')
+>>>>>>> 7a14db6154e221ee24ac06aa796621a90e98c313
