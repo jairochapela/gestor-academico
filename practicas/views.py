@@ -9,8 +9,9 @@ from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, 
 
 from auditlog.context import set_actor
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Alumno, Curso
+from .models import Empresa, Alumno
 from django.views.generic import ListView
 from practicas.models import Alumno
 
@@ -23,6 +24,14 @@ def list_empresas(request):
         'empresas': empresas,
     })
 
+def empresa_detalle(request, id):
+    empresa = get_object_or_404(Empresa, pk=id)
+    alumnos = Alumno.objects.filter(empresa=empresa)
+
+    return render(request, 'practicas/empresa_detalle.html', {
+        'empresa': empresa,
+        'alumnos': alumnos,
+    })
 
 # Create your views here.
 
