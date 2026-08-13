@@ -1,4 +1,5 @@
 import logging
+from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from auditlog.mixins import LogAccessMixin
@@ -10,6 +11,13 @@ from auditlog.context import set_actor
 
 
 logger = logging.getLogger('principal')
+
+
+def list_empresas(request):
+    empresas = Empresa.objects.all()
+    return render(request, 'practicas/list_empresas.html', {
+        'empresas': empresas,
+    })
 
 
 # Create your views here.
