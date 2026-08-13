@@ -9,6 +9,8 @@ from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, 
 
 from auditlog.context import set_actor
 
+from django.shortcuts import render
+
 
 logger = logging.getLogger('principal')
 
@@ -70,3 +72,7 @@ class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
+
+
+def frontpage(request):
+    return render(request, 'practica/frontpage.html')
