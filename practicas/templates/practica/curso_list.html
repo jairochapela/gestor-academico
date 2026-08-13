@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Listado de Cursos</h2>
-        <a href="#" class="btn btn-primary">+ Nuevo Curso</a>
+        <a href="/admin/practicas/curso/add/" class="btn btn-primary">+ Nuevo Curso</a>
     </div>
 
     <!-- Formulario de Búsqueda -->
@@ -12,6 +12,9 @@
         <div class="input-group">
             <input type="text" name="q" class="form-control" placeholder="Buscar por nombre..." value="{{ request.GET.q|default:'' }}">
             <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            {% if request.GET.q %}
+                <a href="{% url 'curso-list-web' %}" class="btn btn-outline-danger">Limpiar</a>
+            {% endif %}
         </div>
     </form>
 
@@ -29,15 +32,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for curso in cursos %}
+                        {% for curso in object_list|default:cursos %}
                         <tr>
                             <td><strong>{{ curso.nombre }}</strong></td>
                             <td>{{ curso.descripcion|default:"Sin descripción"|truncatewords:12 }}</td>
                             <td>{{ curso.fecha_inicio|date:"d/m/Y" }}</td>
                             <td>{{ curso.fecha_fin|date:"d/m/Y" }}</td>
                             <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-outline-info">Ver</a>
-                                <a href="#" class="btn btn-sm btn-outline-warning">Editar</a>
+                                <!-- Enlace a la API REST del curso -->
+                                <a href="/api/v1/cursos/{{ curso.id }}/" class="btn btn-sm btn-outline-info" target="_blank">Ver API</a>
+                                <!-- Enlace de edición en Django Admin -->
+                                <a href="/admin/practicas/curso/{{ curso.id }}/change/" class="btn btn-sm btn-outline-warning">Editar</a>
                             </td>
                         </tr>
                         {% empty %}
@@ -52,5 +57,32 @@
             </div>
         </div>
     </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <nav aria-label="Navegación de páginas" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 {% endblock %}

@@ -22,10 +22,10 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Portada + API de practicas
-    path('', include('practicas.urls')),
+    # Mapeo de la aplicación prácticas bajo api/v1/
+    path('api/v1/', include('practicas.urls')),
 
-    # JWT
+    # JWT Authentication
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 

@@ -65,7 +65,10 @@ ROOT_URLCONF = 'gestor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Agregamos la ruta explícita para que encuentre base.html sin importar la subcarpeta
+        'DIRS': [
+            BASE_DIR / 'practicas' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,11 +90,8 @@ WSGI_APPLICATION = 'gestor.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-<<<<<<< HEAD
-        'NAME':  'gestor_academico',
-=======
+    #    'NAME': 'gestor_academico',  # asi se llama mi DB
         'NAME': 'gestor',
->>>>>>> 7a14db6154e221ee24ac06aa796621a90e98c313
         'USER': 'postgres',
         'PASSWORD': 'datw26',
         'HOST': 'localhost',
