@@ -1,8 +1,13 @@
-from django.http import HttpResponse
 from django.urls import path, include
 from rest_framework import routers
 
-from practicas.views import CursoViewSet, EmpresaViewSet, HorarioViewSet, AlumnoViewSet
+from . import views
+from practicas.views import (
+    CursoViewSet,
+    EmpresaViewSet,
+    HorarioViewSet,
+    AlumnoViewSet,
+)
 
 router = routers.DefaultRouter()
 router.register(r'cursos', CursoViewSet)
@@ -11,5 +16,6 @@ router.register(r'horarios', HorarioViewSet)
 router.register(r'alumnos', AlumnoViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', views.frontpage, name='frontpage'),
+    path('api/v1/', include(router.urls)),
 ]
