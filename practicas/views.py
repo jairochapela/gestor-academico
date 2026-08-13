@@ -12,7 +12,7 @@ from auditlog.context import set_actor
 from django.shortcuts import render, get_object_or_404
 from .models import Alumno, Curso
 from .models import Empresa, Alumno
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 from practicas.models import Alumno
 
 logger = logging.getLogger('principal')
@@ -119,3 +119,15 @@ class AlumnoListView(ListView):
 
 def frontpage(request):
     return render(request, 'practica/frontpage.html')
+
+
+
+
+class AlumnoDetailView(DetailView):
+    model = Alumno
+    # template_name = "alumnos/detalle.html"  # Ajusta al nombre de tu plantilla
+    context_object_name = "alumno"
+
+    # def get_queryset(self):
+    #     alumno_id = self.kwargs.get("id")
+    #     return Alumno.objects.filter(id=alumno_id)
