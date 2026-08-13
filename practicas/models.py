@@ -2,6 +2,8 @@ from django.db import models
 
 from auditlog.registry import auditlog
 
+from django.views.generic import ListView
+
 
 # Create your models here.
 class Curso(models.Model):
