@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Alumnos - Gestor Académico</title>
-   
+    
 </head>
 <body>
     <div class="container">
@@ -17,13 +17,13 @@
             <!-- Formulario de filtro -->
             <div class="filter-section">
                 <h2>🔍 Filtrar por Curso</h2>
-                <form method="get" action="{% url 'listado_alumnos' %}">
+                <form method="get">
                     <div class="form-group">
                         <label for="curso_filter">Selecciona un curso:</label>
                         <select name="curso" id="curso_filter" onchange="this.form.submit()">
                             <option value="">-- Todos los cursos --</option>
                             {% for curso in cursos %}
-                                <option value="{{ curso.id }}" {% if curso.id == curso_actual %}selected{% endif %}>
+                                <option value="{{ curso.id }}" {% if curso.id == selected_curso %}selected{% endif %}>
                                     {{ curso.nombre }}
                                 </option>
                             {% endfor %}
@@ -40,10 +40,10 @@
                     <h3>{{ alumnos|length }}</h3>
                     <p>Alumnos Totales</p>
                 </div>
-                {% if curso_actual %}
+                {% if selected_curso %}
                 <div class="stat-card">
-                    <h3>{{ curso_actual.nombre }}</h3>
-                    <p>Curso Seleccionado</p>
+                    <h3>Curso Seleccionado</h3>
+                    <p>{{ selected_curso }}</p>
                 </div>
                 {% endif %}
             </div>
@@ -110,7 +110,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 <h3>No hay alumnos</h3>
-                <p>{% if curso_actual %}No hay alumnos asignados a este curso.{% else %}Selecciona un curso para ver los alumnos.{% endif %}</p>
+                <p>{% if selected_curso %}No hay alumnos asignados a este curso.{% else %}Selecciona un curso para ver los alumnos.{% endif %}</p>
             </div>
             {% endif %}
         </div>

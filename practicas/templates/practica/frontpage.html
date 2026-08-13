@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestor Académico</title>
+    <link rel="stylesheet" href="{% static 'global.css' %}">
+</head>
+
+<body>
+
+    <main id="frontpage" class="container">
+
+        <div class="icon">🎓</div>
+
+        <h1>Gestor Académico</h1>
+
+        <p>
+            Gestiona tus alumnos, asignaturas y prácticas
+            desde un único lugar.
+        </p>
+
+        <div class="buttons">
+            <a href="/api/v1/" id="btn-cursos" class="btn btn-primary">
+                🚀 Comenzar
+            </a>
+
+            <a href="/admin/" id="btn-admin" class="btn btn-secondary">
+                ⚙️ Administración
+            </a>
+        </div>
+
+        <footer>
+            © 2026 Gestor Académico
+        </footer>
+
+    </main>
+
+</body>
+</html>

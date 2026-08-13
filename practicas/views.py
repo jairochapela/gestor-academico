@@ -1,4 +1,5 @@
 import logging
+from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from auditlog.mixins import LogAccessMixin
@@ -8,8 +9,19 @@ from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, 
 
 from auditlog.context import set_actor
 
+from django.shortcuts import render
+from .models import Alumno, Curso
+from django.views.generic import ListView
+from practicas.models import Alumno
 
 logger = logging.getLogger('principal')
+
+
+def list_empresas(request):
+    empresas = Empresa.objects.all()
+    return render(request, 'practicas/list_empresas.html', {
+        'empresas': empresas,
+    })
 
 
 # Create your views here.
@@ -20,7 +32,7 @@ class AuditlogActorMixin:
         user = getattr(self.request, 'user', None)
         if user is not None and user.is_authenticated:
             return set_actor(user)
-        return set_actor(None)
+            return set_actor(None)
 
     def create(self, request, *args, **kwargs):
         with self._actor_context():
@@ -62,3 +74,39 @@ class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
+
+    def get_queryset(self):
+        queryset = Alumno.objects.all()
+        curso_id = self.request.query_params.get("curso")
+
+        if curso_id:
+            queryset = queryset.filter(curso_id=curso_id)
+
+        return queryset
+
+   
+class AlumnoListView(ListView):
+    model = Alumno
+    template_name = "alumnos/listado.html"   # Ajusta al nombre de tu plantilla
+    context_object_name = "alumnos"
+
+    def get_queryset(self):
+        queryset = Alumno.objects.all()
+        curso_id = self.request.GET.get("curso")
+
+        if curso_id:
+            queryset = queryset.filter(curso_id=curso_id)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        curso_id = self.request.GET.get("curso")
+
+        context["cursos"] = Curso.objects.all()
+        context["curso_seleccionado"] = curso_id
+
+        return context
+
+def frontpage(request):
+    return render(request, 'practica/frontpage.html')
