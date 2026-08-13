@@ -39,11 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'practicas',
+
+    # Third party apps
     'rest_framework',
-    'rest_framework_simplejwt',
+    'django_filters',
     'auditlog',
     'drf_spectacular',
+
+    # Local apps
+    'practicas',
 ]
 
 MIDDLEWARE = [
@@ -62,7 +66,10 @@ ROOT_URLCONF = 'gestor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Agregamos la ruta explícita para que encuentre base.html sin importar la subcarpeta
+        'DIRS': [
+            BASE_DIR / 'practicas' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,7 +91,7 @@ WSGI_APPLICATION = 'gestor.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'pruebagestor'),
+        'NAME': os.environ.get('DB_NAME', 'gestor'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'datw26'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
@@ -114,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'Europe/Madrid'
 
@@ -122,7 +129,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-APPEND_SLASH=False
+APPEND_SLASH = False
+
+LOGIN_URL = '/admin/login/'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -135,12 +145,17 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -160,26 +175,20 @@ LOGGING = {
 }
 
 
-
+# JWT Settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=90),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 
-AUDITLOG_CID_HEADER="X-Client-ID"
+# Auditlog Header
+AUDITLOG_CID_HEADER = "X-Client-ID"
 
 
-REST_FRAMEWORK = {
-    # YOUR SETTINGS
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-}
-
-
+# DRF Spectacular Settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Gestor Académico API',
     'DESCRIPTION': 'API para la gestión académica',
     'VERSION': '1.0.0',
-    #'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
 }
