@@ -34,6 +34,11 @@ def empresa_detalle(request, id):
     })
 
 # Create your views here.
+def lista_alumno(request):
+    alumnos = Alumno.objects.all()
+    return render(request, 'practicas/listado_alumnos.html', {
+        'alumnos': alumnos,
+    })
 
 
 class AuditlogActorMixin:
