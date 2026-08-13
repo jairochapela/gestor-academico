@@ -1,21 +1,6 @@
-from django.urls import path, include
-from rest_framework import routers
+from django.urls import path
 
 from . import views
-from practicas.views import (
-    AlumnoListView,
-    CursoViewSet,
-    EmpresaViewSet,
-    HorarioViewSet,
-    AlumnoViewSet,
-    list_empresas,
-)
-
-router = routers.DefaultRouter()
-router.register(r'cursos', CursoViewSet)
-router.register(r'empresas', EmpresaViewSet)
-router.register(r'horarios', HorarioViewSet)
-router.register(r'alumnos', AlumnoViewSet)
 
 urlpatterns = [
     #Listado de empresas
