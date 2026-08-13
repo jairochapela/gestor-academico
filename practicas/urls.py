@@ -3,11 +3,17 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Portada
     path('', views.frontpage, name='frontpage'),
 
     # Vistas HTML
     path('empresas/lista/', views.list_empresas, name='list_empresas'),
     path('alumnos/lista/', views.AlumnoListView.as_view(), name='listado_alumnos'),
     path('cursos/lista/', views.CursoListView.as_view(), name='curso_list'),
+
+    path('empresas/', views.list_empresas, name='list_empresas'),    
+    path('empresas/<int:id>/', views.empresa_detalle, name='empresa_detalle'),  
+    path('alumnos/', views.lista_alumno, name='lista_alumno'),
+    path('alumnos/<int:pk>/', views.AlumnoDetailView.as_view(), name='alumno_detalle'),
+    # TODO path('cursos/', views.lista_curso, name='lista_curso'),
+    # TODO path('cursos/<int:pk>/', views.CursoDetailView.as_view(), name='curso_detalle'),
 ]

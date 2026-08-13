@@ -10,6 +10,14 @@ from auditlog.context import set_actor
 from .models import Curso, Empresa, Horario, Alumno
 from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, AlumnoSerializer
 
+from auditlog.context import set_actor
+
+from django.shortcuts import render, get_object_or_404
+from .models import Alumno, Curso
+from .models import Empresa, Alumno
+from django.views.generic import DetailView, ListView
+from practicas.models import Alumno
+
 logger = logging.getLogger('principal')
 
 
@@ -25,12 +33,26 @@ def list_empresas(request):
         'empresas': empresas,
     })
 
+def empresa_detalle(request, id):
+    empresa = get_object_or_404(Empresa, pk=id)
+    alumnos = Alumno.objects.filter(empresa=empresa)
+
+    return render(request, 'practicas/empresa_detalle.html', {
+        'empresa': empresa,
+        'alumnos': alumnos,
+    })
 
 class CursoListView(ListView):
     model = Curso
     template_name = 'practicas/curso_list.html'
     context_object_name = 'cursos'
     paginate_by = 10
+# Create your views here.
+def lista_alumno(request):
+    alumnos = Alumno.objects.all()
+    return render(request, 'practicas/listado_alumnos.html', {
+        'alumnos': alumnos,
+    })
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -136,4 +158,53 @@ class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
             queryset = queryset.filter(curso_id=curso_id)
 
         return queryset
-    
+
+   
+class AlumnoListView(ListView):
+    model = Alumno
+    template_name = "practicas/listado_alumnos.html"
+    context_object_name = "alumnos"
+
+    def get_queryset(self):
+        queryset = Alumno.objects.all()
+        curso_id = self.request.GET.get("curso")
+
+        if curso_id:
+            queryset = queryset.filter(curso_id=curso_id)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cursos'] = Curso.objects.all()
+        
+        # Pasar el ID del curso seleccionado
+        curso_id = self.request.GET.get("curso")
+        if curso_id:
+            context['selected_curso'] = int(curso_id)
+        
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        curso_id = self.request.GET.get("curso")
+
+        context["cursos"] = Curso.objects.all()
+        context["curso_seleccionado"] = curso_id
+
+        return context
+
+def frontpage(request):
+    return render(request, 'practica/frontpage.html')
+
+
+
+
+class AlumnoDetailView(DetailView):
+    model = Alumno
+    # template_name = "alumnos/detalle.html"  # Ajusta al nombre de tu plantilla
+    context_object_name = "alumno"
+
+    # def get_queryset(self):
+    #     alumno_id = self.kwargs.get("id")
+    #     return Alumno.objects.filter(id=alumno_id)
