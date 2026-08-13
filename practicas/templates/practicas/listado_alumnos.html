@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Alumnos - Gestor Académico</title>
+   
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Listado de Alumnos</h1>
+            <p>Gestor Académico de Prácticas</p>
+        </div>
+        
+        <div class="content">
+            <!-- Formulario de filtro -->
+            <div class="filter-section">
+                <h2>🔍 Filtrar por Curso</h2>
+                <form method="get" action="{% url 'listado_alumnos' %}">
+                    <div class="form-group">
+                        <label for="curso_filter">Selecciona un curso:</label>
+                        <select name="curso" id="curso_filter" onchange="this.form.submit()">
+                            <option value="">-- Todos los cursos --</option>
+                            {% for curso in cursos %}
+                                <option value="{{ curso.id }}" {% if curso.id == curso_actual %}selected{% endif %}>
+                                    {{ curso.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Filtrar</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Estadísticas -->
+            {% if alumnos %}
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>{{ alumnos|length }}</h3>
+                    <p>Alumnos Totales</p>
+                </div>
+                {% if curso_actual %}
+                <div class="stat-card">
+                    <h3>{{ curso_actual.nombre }}</h3>
+                    <p>Curso Seleccionado</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Tabla de alumnos -->
+            {% if alumnos %}
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>NIF/NIE</th>
+                            <th>Curso</th>
+                            <th>Empresa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alumno in alumnos %}
+                        <tr>
+                            <td>
+                                <strong>{{ alumno.nombre }} {{ alumno.apellidos }}</strong>
+                            </td>
+                            <td>
+                                <a href="mailto:{{ alumno.email }}" style="color: #667eea; text-decoration: none;">
+                                    {{ alumno.email }}
+                                </a>
+                            </td>
+                            <td>{{ alumno.telefono|default:"N/A" }}</td>
+                            <td>
+                                <span class="badge badge-secondary">{{ alumno.nif_nie }}</span>
+                            </td>
+                            <td>
+                                {% if alumno.curso %}
+                                    <span class="badge badge-primary">{{ alumno.curso.nombre }}</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Sin asignar</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if alumno.empresa %}
+                                    {{ alumno.empresa.nombre }}
+                                {% else %}
+                                    <span style="color: #999;">Sin empresa</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a href="#" class="btn-small btn-view">Ver</a>
+                                    <a href="#" class="btn-small btn-edit">Editar</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <h3>No hay alumnos</h3>
+                <p>{% if curso_actual %}No hay alumnos asignados a este curso.{% else %}Selecciona un curso para ver los alumnos.{% endif %}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
