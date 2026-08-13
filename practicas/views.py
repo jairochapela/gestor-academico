@@ -1,19 +1,16 @@
 import logging
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
-from auditlog.mixins import LogAccessMixin
+from django.db.models import Count
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django_filters.rest_framework import DjangoFilterBackend
+from auditlog.context import set_actor
 
 from .models import Curso, Empresa, Horario, Alumno
 from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, AlumnoSerializer
 
-from auditlog.context import set_actor
-
-
 logger = logging.getLogger('principal')
-
-
-# Create your views here.
-
 
 class AuditlogActorMixin:
     def _actor_context(self):
@@ -42,11 +39,21 @@ class AuditlogActorMixin:
             logger.info(f"Request data for deleting {self.__class__.__name__}: {request.data} with user: {request.user}")
             return super().destroy(request, *args, **kwargs)
 
+# --- VIEWSETS (API) ---
 
 class CursoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
-    queryset = Curso.objects.all()
     serializer_class = CursoSerializer
+    queryset = Curso.objects.all()
+
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['nombre', 'descripcion']
+    filterset_fields = ['fecha_inicio', 'fecha_fin']
+    ordering_fields = ['nombre', 'fecha_inicio', 'fecha_fin']
+    ordering = ['-fecha_inicio']
+
+    def get_queryset(self):
+        return Curso.objects.annotate(total_alumnos=Count('alumno'))
 
 class EmpresaViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
@@ -62,3 +69,20 @@ class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
+
+# --- VISTA HTML ---
+
+class CursoListView(LoginRequiredMixin, ListView):
+    model = Curso
+    template_name = 'practicas/curso_list.html'
+    context_object_name = 'cursos'
+    paginate_by = 10
+    ordering = ['-fecha_inicio']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(nombre__icontains=query)
+        return queryset
+    
