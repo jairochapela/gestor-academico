@@ -16,6 +16,8 @@ router.register(r'horarios', HorarioViewSet)
 router.register(r'alumnos', AlumnoViewSet)
 
 urlpatterns = [
+    path('empresas/', list_empresas, name='list_empresas'),
+    path('', include(router.urls)),
     path('', views.frontpage, name='frontpage'),
     path('api/v1/', include(router.urls)),
 ]
