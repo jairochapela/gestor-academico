@@ -83,9 +83,9 @@ WSGI_APPLICATION = 'gestor.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gestor_academico',
-        'USER': 'jairo',
-        'PASSWORD': 'aaa',
+        'NAME': 'pruebagestor',
+        'USER': 'postgres',
+        'PASSWORD': 'datw26',
         'HOST': 'localhost',
         'PORT': '5432',
     }

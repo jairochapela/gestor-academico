@@ -2,7 +2,13 @@ from django.http import HttpResponse
 from django.urls import path, include
 from rest_framework import routers
 
-from practicas.views import CursoViewSet, EmpresaViewSet, HorarioViewSet, AlumnoViewSet
+from practicas.views import (
+    CursoViewSet, 
+    EmpresaViewSet, 
+    HorarioViewSet, 
+    AlumnoViewSet,
+    AlumnoListView
+)
 
 router = routers.DefaultRouter()
 router.register(r'cursos', CursoViewSet)
@@ -12,4 +18,6 @@ router.register(r'alumnos', AlumnoViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('alumnos/', AlumnoListView.as_view(), name='listado_alumnos'),
 ]
+
