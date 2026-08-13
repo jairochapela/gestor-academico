@@ -1,27 +1,13 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from . import views
-from .views import (
-    CursoViewSet, 
-    EmpresaViewSet, 
-    HorarioViewSet, 
-    AlumnoViewSet, 
-    CursoListView
-)
+from django.urls import path
 
-router = DefaultRouter()
-router.register(r'cursos', CursoViewSet)
-router.register(r'empresas', EmpresaViewSet)
-router.register(r'horarios', HorarioViewSet)
-router.register(r'alumnos', AlumnoViewSet)
+from . import views
 
 urlpatterns = [
-    # Vista principal agregada por el equipo
+    # Portada
     path('', views.frontpage, name='frontpage'),
 
-    # Vista HTML del listado
-    path('listado-cursos/', CursoListView.as_view(), name='curso-list-web'),
-    
-    # Endpoints de la API REST
-    path('', include(router.urls)),
+    # Vistas HTML
+    path('empresas/lista/', views.list_empresas, name='list_empresas'),
+    path('alumnos/lista/', views.AlumnoListView.as_view(), name='listado_alumnos'),
+    path('cursos/lista/', views.CursoListView.as_view(), name='curso_list'),
 ]

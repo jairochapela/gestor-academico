@@ -1,21 +1,70 @@
 import logging
+from django.shortcuts import render
+from django.views.generic import ListView
+from django.db.models import Count
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
-from django.db.models import Count
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django_filters.rest_framework import DjangoFilterBackend
 from auditlog.context import set_actor
 
 from .models import Curso, Empresa, Horario, Alumno
 from .serializers import CursoSerializer, EmpresaSerializer, HorarioSerializer, AlumnoSerializer
 
-from auditlog.context import set_actor
-
-from django.shortcuts import render
-
-
 logger = logging.getLogger('principal')
+
+
+# --- VISTAS WEB (HTML) ---
+
+def frontpage(request):
+    return render(request, 'practica/frontpage.html')
+
+
+def list_empresas(request):
+    empresas = Empresa.objects.all()
+    return render(request, 'practicas/list_empresas.html', {
+        'empresas': empresas,
+    })
+
+
+class CursoListView(ListView):
+    model = Curso
+    template_name = 'practicas/curso_list.html'
+    context_object_name = 'cursos'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(nombre__icontains=q)
+        return queryset
+
+
+class AlumnoListView(ListView):
+    model = Alumno
+    template_name = "alumnos/listado.html"
+    context_object_name = "alumnos"
+
+    def get_queryset(self):
+        queryset = Alumno.objects.all()
+        curso_id = self.request.GET.get("curso")
+
+        if curso_id:
+            queryset = queryset.filter(curso_id=curso_id)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        curso_id = self.request.GET.get("curso")
+
+        context["cursos"] = Curso.objects.all()
+        context["curso_seleccionado"] = curso_id
+
+        return context
+
+
+# --- MIXINS ---
 
 class AuditlogActorMixin:
     def _actor_context(self):
@@ -44,7 +93,8 @@ class AuditlogActorMixin:
             logger.info(f"Request data for deleting {self.__class__.__name__}: {request.data} with user: {request.user}")
             return super().destroy(request, *args, **kwargs)
 
-# --- VIEWSETS (API) ---
+
+# --- VIEWSETS (API REST) ---
 
 class CursoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
@@ -60,37 +110,30 @@ class CursoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         return Curso.objects.annotate(total_alumnos=Count('alumno'))
 
+
 class EmpresaViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
+
 
 class HorarioViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Horario.objects.all()
     serializer_class = HorarioSerializer
 
+
 class AlumnoViewSet(AuditlogActorMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
 
-# --- VISTA HTML ---
-
-class CursoListView(LoginRequiredMixin, ListView):
-    model = Curso
-    template_name = 'practica/curso_list.html'
-    context_object_name = 'cursos'
-    paginate_by = 10
-    ordering = ['-fecha_inicio']
-
     def get_queryset(self):
-        queryset = super().get_queryset()
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(nombre__icontains=query)
+        queryset = Alumno.objects.all()
+        curso_id = self.request.query_params.get("curso")
+
+        if curso_id:
+            queryset = queryset.filter(curso_id=curso_id)
+
         return queryset
     
-
-def frontpage(request):
-    return render(request, 'practica/frontpage.html')
